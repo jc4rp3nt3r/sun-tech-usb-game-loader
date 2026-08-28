@@ -47,26 +47,36 @@ A console window opens and stays open (closing it shuts the loader down), and th
 
 Double-click **`START.command`**.
 
-The first time, macOS will very likely refuse and say the file *"cannot be opened because it is from an unidentified developer."* This is Gatekeeper doing its job: anything that arrives from the internet or an unfamiliar drive gets tagged with a quarantine attribute, and macOS will not run a script carrying that tag until a human vouches for it. Nothing is wrong with the file.
+**On recent macOS this will not work the first time, and right-clicking will not help.** See the next section — it takes about ten seconds to clear.
 
-Two ways to clear it:
+### Security warning on macOS
 
-**Right-click, once.** Right-click (or Control-click) `START.command` → **Open** → **Open** again in the dialog. macOS remembers your decision for that file.
+macOS tags anything that arrives from the internet or an unfamiliar drive with a *quarantine* attribute, and Gatekeeper refuses to run a script carrying that tag until a human vouches for it. You'll see:
 
-**Or from Terminal, for the whole drive.** This is the better option if you're preparing sticks in bulk:
+> *"START.command" cannot be opened because it is from an unidentified developer.*
+
+Nothing is wrong with the file. **As of macOS Sequoia (15), Apple removed the old Control-click → Open shortcut** that used to clear this, so on any current Mac that trick does nothing at all. Two things do work:
+
+**Clear the tag from Terminal — recommended, and the only sane option for preparing sticks in bulk.** Open Terminal (⌘-Space, type "Terminal") and run:
 
 ```bash
 xattr -dr com.apple.quarantine /Volumes/YOUR-DRIVE-NAME
 chmod +x /Volumes/YOUR-DRIVE-NAME/START.command
 ```
 
-Replace `YOUR-DRIVE-NAME` with whatever the stick is called — `ls /Volumes` will tell you. The first line removes the quarantine tag from every file on the drive; the second makes sure the launcher is still marked executable, which some drive formats don't preserve.
+Replace `YOUR-DRIVE-NAME` with the stick's actual name — run `ls /Volumes` to see it. The first line removes the quarantine tag from every file on the drive; the second restores the executable bit, which FAT and exFAT drives don't preserve. Then double-click `START.command` as normal.
+
+**Or approve it once through System Settings.** Double-click `START.command` and let it be refused. Then open **System Settings → Privacy & Security**, scroll to the Security section, and click **Open Anyway** next to the message about `START.command`. Confirm with Touch ID or your password. This approves that one file on that one Mac, so you'll repeat it on every machine — which is why the Terminal command above is better if more than one Mac is involved.
+
+> **Doing this for a camp or club?** Clear the quarantine tag on the master stick *before* you clone copies. It saves you doing it on every machine, in front of a room of kids waiting to play.
 
 ### Making it faster and more reliable
 
 Run **`SETUP-RUNTIME.bat`** (Windows) or **`setup-runtime.command`** (macOS) **once**, on a computer with internet. It downloads the official signed Node.js build onto the stick, after which the loader runs anywhere with nothing installed.
 
-You can skip it. On Windows the loader falls back to PowerShell, which every machine already has.
+On Windows you can skip it — the loader falls back to PowerShell, which every machine already has.
+
+**On macOS you cannot skip it,** because macOS ships no equivalent built-in server. If Node is missing, `START.command` will notice and offer to download it for you — about 50 MB, once — and will save it onto the drive so the next Mac starts instantly. Say yes, or run `setup-runtime.command` ahead of time.
 
 ---
 

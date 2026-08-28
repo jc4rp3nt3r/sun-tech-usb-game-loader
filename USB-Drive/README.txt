@@ -2,12 +2,69 @@ SUN TECH UNLIMITED  ///  GAME GRID
 =================================================================
 
   WINDOWS   Double-click  START.bat
-  MAC       Double-click  START.command
+  MAC       Double-click  START.command  (see the two Mac sections below)
 
 That's it. A window opens with every game on the drive.
 
-If macOS refuses to open START.command, right-click it and choose
-Open, then Open again. You only have to do that once.
+ON A MAC, THE FIRST RUN NEEDS TWO EXTRA STEPS. See the next two
+sections. It takes about a minute, once per stick.
+
+
+-----------------------------------------------------------------
+MAC: "CANNOT BE OPENED BECAUSE IT IS FROM AN UNIDENTIFIED
+DEVELOPER"
+-----------------------------------------------------------------
+
+macOS tags anything arriving from an unfamiliar drive, and refuses
+to run it until a person vouches for it. Nothing is wrong with the
+file.
+
+IMPORTANT: on macOS Sequoia and newer, right-clicking and choosing
+Open NO LONGER WORKS. Apple removed that shortcut. Do this instead.
+
+  1. Open Terminal.  (Press Command-Space, type Terminal, Return.)
+
+  2. Type this, but do not press Return yet - note the trailing
+     space:
+
+       xattr -dr com.apple.quarantine
+
+  3. Drag the USB drive's icon from Finder into the Terminal
+     window. It fills in the path for you. Now press Return.
+
+  4. Then run this, dragging the drive in the same way:
+
+       chmod +x /Volumes/YOUR-DRIVE/START.command
+
+  5. Double-click START.command. It opens.
+
+The alternative, if you would rather not use Terminal: double-click
+START.command, let it be refused, then go to
+
+  System Settings > Privacy & Security
+
+scroll down to Security, and click "Open Anyway" next to the note
+about START.command. That approves one file on one Mac, so you
+would repeat it on every machine.
+
+PREPARING STICKS FOR A GROUP? Clear the tag on the master stick
+before you make copies. Doing it in front of a room of waiting kids
+is not fun.
+
+
+-----------------------------------------------------------------
+MAC: THE LOADER NEEDS NODE
+-----------------------------------------------------------------
+
+Windows can fall back to PowerShell, which every PC already has.
+macOS has no equivalent built in, so the Game Grid needs Node.
+
+If it is missing, START.command will say so and offer to download
+it - about 50 MB, once - and will save it onto the drive so every
+Mac after that starts straight away. Just say yes.
+
+To set this up ahead of time, run setup-runtime.command on a Mac
+with internet. Do it before an event, not during one.
 
 
 -----------------------------------------------------------------
@@ -85,6 +142,11 @@ IF SOMETHING GOES WRONG
 Nothing happens when I double-click START.bat
   Some school machines block .bat files. Open the  system  folder,
   right-click server.ps1, and choose "Run with PowerShell".
+
+Nothing happens when I double-click START.command on a Mac
+  See the two Mac sections near the top of this file. Ninety-nine
+  times out of a hundred it is the quarantine tag, and the fix is
+  the xattr command.
 
 A game is missing from the list
   Check it is inside the  games  folder and that the file ends in
