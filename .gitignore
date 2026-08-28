@@ -1,0 +1,25 @@
+# Node runtime downloaded onto the stick by SETUP-RUNTIME — never commit these,
+# they are large and platform-specific. Users fetch their own signed copy.
+USB-Drive/system/runtime/win-x64/
+USB-Drive/system/runtime/darwin-arm64/
+USB-Drive/system/runtime/darwin-x64/
+!USB-Drive/system/runtime/README.txt
+
+# Browser profile, if an old build ever left one behind
+**/.browser-profile/
+
+# Backups the loader writes when it cannot parse a manifest
+**/games.broken-*.json
+
+# OS noise
+.DS_Store
+Thumbs.db
+desktop.ini
+._*
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+node_modules/

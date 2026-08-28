@@ -1,0 +1,46 @@
+{
+  "club": "SUN Tech Unlimited",
+  "note": "Every path below is relative to THIS file. See _TEMPLATE/README.txt before editing by hand.",
+  "games": [
+    {
+      "id": "grid-runner",
+      "title": "Grid Runner",
+      "author": "SUN Tech Unlimited",
+      "description": "Outrun two hostile programs on a closed grid. The wall you die on is the one you drew. Clear a round and the next one runs faster.",
+      "controls": "Arrow keys or W A S D to turn, Space to start",
+      "tags": [
+        "arcade",
+        "example"
+      ],
+      "preview": "grid-runner/cover.png",
+      "path": "grid-runner/index.html",
+      "featured": true
+    },
+    {
+      "id": "pulse-breaker",
+      "title": "Pulse Breaker",
+      "author": "SUN Tech Unlimited",
+      "description": "A brick breaker that speeds up every time you hit something. Strike the paddle off-centre to steer the pulse where you need it.",
+      "controls": "Left and right arrows or A D, Space to serve",
+      "tags": [
+        "arcade",
+        "example"
+      ],
+      "preview": "pulse-breaker-cover.png",
+      "path": "pulse-breaker.html"
+    },
+    {
+      "id": "signal-lock",
+      "title": "Signal Lock",
+      "author": "SUN Tech Unlimited",
+      "description": "Stop the carrier inside the lock window. Every success narrows the window and speeds the sweep. Pure reaction, no mercy.",
+      "controls": "Space or Enter to lock",
+      "tags": [
+        "reflex",
+        "example"
+      ],
+      "preview": "signal-lock-cover.png",
+      "path": "signal-lock.html"
+    }
+  ]
+}

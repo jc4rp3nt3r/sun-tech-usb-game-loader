@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Pulse Breaker</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#04060D;overflow:hidden;color:#E9EEFA;
+  font-family:'Chakra Petch','Bahnschrift',system-ui,sans-serif}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#hud{position:absolute;top:12px;left:0;right:0;display:flex;justify-content:center;gap:22px;
+  font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#5C6B8C;z-index:2;
+  pointer-events:none}
+#hud b{color:#fff;font-variant-numeric:tabular-nums;margin-left:6px;font-size:14px}
+#msg{position:absolute;inset:0;display:grid;place-content:center;text-align:center;gap:8px;
+  background:rgba(4,6,13,.9);z-index:3;transition:opacity .3s,visibility .3s}
+#msg.hide{opacity:0;visibility:hidden}
+#msg h1{margin:0;font-size:clamp(2rem,7vw,4rem);font-weight:700;letter-spacing:.05em;
+  background:linear-gradient(90deg,#FF1E6F,#FF6A00 55%,#FFE94A);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 32px rgba(255,30,111,.5))}
+#msg p{margin:0;color:#93A3C2;max-width:38ch;font-size:.95rem}
+#msg .keys{margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:.74rem;
+  letter-spacing:.1em;color:#5C6B8C;text-transform:uppercase}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud"><span>Score<b id="score">0</b></span><span>Lives<b id="lives">3</b></span><span>Wave<b id="wave">1</b></span></div>
+<div id="msg">
+  <h1>PULSE BREAKER</h1>
+  <p>Every brick you clear speeds the pulse up. Hit the paddle off-centre to steer.</p>
+  <p class="keys">← → or A D to move · Space to serve</p>
+</div>
+<script>
+(() => {
+'use strict';
+const c=document.getElementById('c'),ctx=c.getContext('2d'),msg=document.getElementById('msg');
+const scoreEl=document.getElementById('score'),livesEl=document.getElementById('lives'),waveEl=document.getElementById('wave');
+let W=0,H=0,dpr=1;
+function fit(){dpr=Math.min(devicePixelRatio||1,2);W=c.clientWidth;H=c.clientHeight;
+  c.width=W*dpr;c.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);}
+addEventListener('resize',()=>{fit();layout();});
+
+const COLORS=['#FF1E6F','#FF6A00','#FFC24A','#22E8FF','#7A2CC4'];
+let bricks=[],paddle,ball,score=0,lives=3,wave=1,running=false,served=false;
+let left=false,right=false;
+
+function layout(){
+  paddle={w:Math.max(80,W*.13),h:11,x:W/2,y:H-46};
+  if(!served&&ball)Object.assign(ball,{x:paddle.x,y:paddle.y-14});
+}
+
+function build(){
+  bricks=[];
+  const cols=Math.max(7,Math.min(13,Math.floor(W/86))),rows=4+Math.min(wave,4);
+  const pad=6,mx=W*.06,bw=(W-mx*2-pad*(cols-1))/cols,bh=Math.max(16,H*.032);
+  for(let r=0;r<rows;r++)for(let i=0;i<cols;i++)
+    bricks.push({x:mx+i*(bw+pad),y:70+r*(bh+pad),w:bw,h:bh,c:COLORS[r%COLORS.length],hp:r<1?2:1});
+}
+
+function serve(){
+  served=false;
+  ball={x:paddle.x,y:paddle.y-14,r:7,vx:0,vy:0,speed:5.2+wave*.5};
+}
+
+function launch(){
+  served=true;
+  const a=(-70+Math.random()*40)*Math.PI/180;
+  ball.vx=Math.sin(a)*ball.speed;ball.vy=-Math.abs(Math.cos(a))*ball.speed;
+}
+
+function reset(full){
+  if(full){score=0;lives=3;wave=1;}
+  scoreEl.textContent=score;livesEl.textContent=lives;waveEl.textContent=wave;
+  layout();build();serve();
+}
+
+function end(t,s){running=false;
+  msg.innerHTML=`<h1>${t}</h1><p>${s}</p><p class="keys">Score ${score} · Space to play again · Esc for the grid</p>`;
+  msg.classList.remove('hide');}
+
+function step(){
+  const sp=Math.max(7,W*.011);
+  if(left)paddle.x-=sp; if(right)paddle.x+=sp;
+  paddle.x=Math.max(paddle.w/2,Math.min(W-paddle.w/2,paddle.x));
+
+  if(!served){ball.x=paddle.x;ball.y=paddle.y-14;return;}
+
+  ball.x+=ball.vx;ball.y+=ball.vy;
+  if(ball.x<ball.r){ball.x=ball.r;ball.vx*=-1;}
+  if(ball.x>W-ball.r){ball.x=W-ball.r;ball.vx*=-1;}
+  if(ball.y<ball.r){ball.y=ball.r;ball.vy*=-1;}
+
+  if(ball.vy>0&&ball.y+ball.r>=paddle.y&&ball.y-ball.r<paddle.y+paddle.h&&
+     Math.abs(ball.x-paddle.x)<paddle.w/2+ball.r){
+    const hit=(ball.x-paddle.x)/(paddle.w/2);              // steer by contact point
+    const a=hit*Math.PI/3;
+    ball.speed=Math.min(ball.speed*1.012,15);
+    ball.vx=Math.sin(a)*ball.speed;ball.vy=-Math.cos(a)*ball.speed;
+    ball.y=paddle.y-ball.r-1;
+  }
+
+  for(let i=bricks.length-1;i>=0;i--){
+    const b=bricks[i];
+    if(ball.x+ball.r<b.x||ball.x-ball.r>b.x+b.w||ball.y+ball.r<b.y||ball.y-ball.r>b.y+b.h)continue;
+    const ox=Math.min(ball.x+ball.r-b.x,b.x+b.w-(ball.x-ball.r));
+    const oy=Math.min(ball.y+ball.r-b.y,b.y+b.h-(ball.y-ball.r));
+    if(ox<oy)ball.vx*=-1;else ball.vy*=-1;
+    b.hp--;score+=10;
+    if(b.hp<=0)bricks.splice(i,1);
+    ball.speed=Math.min(ball.speed*1.006,15);
+    scoreEl.textContent=score;
+    break;
+  }
+
+  if(!bricks.length){wave++;waveEl.textContent=wave;score+=100;build();serve();return;}
+
+  if(ball.y-ball.r>H){
+    lives--;livesEl.textContent=lives;
+    if(lives<=0)return end('SIGNAL LOST','The pulse got past you.');
+    serve();
+  }
+}
+
+function draw(){
+  ctx.fillStyle='#04060D';ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='rgba(34,232,255,.05)';ctx.lineWidth=1;ctx.beginPath();
+  for(let x=0;x<W;x+=44){ctx.moveTo(x,0);ctx.lineTo(x,H);}
+  for(let y=0;y<H;y+=44){ctx.moveTo(0,y);ctx.lineTo(W,y);}
+  ctx.stroke();
+
+  for(const b of bricks){
+    ctx.fillStyle=b.c;ctx.shadowColor=b.c;ctx.shadowBlur=14;
+    ctx.globalAlpha=b.hp>1?1:.78;
+    ctx.fillRect(b.x,b.y,b.w,b.h);
+    ctx.globalAlpha=1;
+  }
+  ctx.shadowBlur=0;
+
+  ctx.fillStyle='#FF6A00';ctx.shadowColor='#FF6A00';ctx.shadowBlur=22;
+  ctx.fillRect(paddle.x-paddle.w/2,paddle.y,paddle.w,paddle.h);
+
+  ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r,0,7);
+  ctx.fillStyle='#fff';ctx.shadowColor='#22E8FF';ctx.shadowBlur=26;ctx.fill();
+  ctx.shadowBlur=0;
+}
+
+function loop(){requestAnimationFrame(loop);if(running)step();if(ball)draw();}
+
+addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A'){left=true;e.preventDefault();}
+  if(e.key==='ArrowRight'||e.key==='d'||e.key==='D'){right=true;e.preventDefault();}
+  if(e.key===' '){e.preventDefault();
+    if(!running){reset(true);msg.classList.add('hide');running=true;}
+    else if(!served)launch();}
+});
+addEventListener('keyup',e=>{
+  if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A')left=false;
+  if(e.key==='ArrowRight'||e.key==='d'||e.key==='D')right=false;
+});
+addEventListener('mousemove',e=>{if(running&&paddle)paddle.x=e.clientX;});
+
+fit();reset(true);loop();
+})();
+</script>
+</body>
+</html>

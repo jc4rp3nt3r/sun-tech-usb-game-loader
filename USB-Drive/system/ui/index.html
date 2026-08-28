@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en" data-view="boot">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SUN Tech Unlimited — Game Grid</title>
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ambient: perspective grid floor + horizon bloom ---------------------- -->
+<div class="ambient" aria-hidden="true">
+  <div class="ambient__bloom"></div>
+  <div class="ambient__floor"><div class="ambient__floor-inner"></div></div>
+  <div class="ambient__scan"></div>
+</div>
+
+<!-- ====================================================================== -->
+<!-- BOOT                                                                    -->
+<!-- ====================================================================== -->
+<div class="boot" id="boot">
+  <div class="boot__stack">
+    <img class="boot__logo" src="img/logo-unlimited.png" alt="SUN Tech Unlimited">
+    <div class="boot__bar"><i></i></div>
+    <p class="boot__status" id="bootStatus">Initializing grid</p>
+  </div>
+</div>
+
+<!-- ====================================================================== -->
+<!-- RIBBON — persistent                                                     -->
+<!-- ====================================================================== -->
+<header class="ribbon" id="ribbon">
+  <div class="ribbon__stripe" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+
+  <a class="ribbon__brand" href="#" id="brandHome" title="Back to the grid">
+    <img src="img/logo-unlimited.png" alt="SUN Tech Unlimited">
+  </a>
+
+  <div class="ribbon__div" aria-hidden="true"></div>
+  <p class="ribbon__label" id="ribbonLabel">Game Grid</p>
+
+  <div class="ribbon__spacer"></div>
+
+  <p class="ribbon__hint" id="ribbonHint"><kbd>↑</kbd><kbd>↓</kbd> select <kbd>Enter</kbd> play</p>
+
+  <button class="btn btn--ghost" id="btnAdd" type="button">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" fill="none"/></svg>
+    Add a game
+  </button>
+
+  <button class="btn btn--exit" id="btnMenu" type="button" hidden>
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+    Back to grid <kbd>Esc</kbd>
+  </button>
+</header>
+
+<!-- ====================================================================== -->
+<!-- MENU                                                                    -->
+<!-- ====================================================================== -->
+<main class="stage" id="stage">
+
+  <section class="menu" id="menu" aria-label="Game menu">
+
+    <div class="menu__list-col">
+      <div class="colhead">
+        <h1 class="colhead__title">Select a program</h1>
+        <p class="colhead__count" id="gameCount">—</p>
+      </div>
+
+      <div class="alerts" id="alerts"></div>
+
+      <ol class="list" id="list" role="listbox" aria-label="Games" tabindex="0"></ol>
+
+      <p class="dropnote" id="dropnote">
+        Drop an <code>.html</code> file into the <strong>games</strong> folder on this drive
+        and press <kbd>R</kbd>. It appears here straight away.
+      </p>
+
+      <div class="empty" id="empty" hidden>
+        <div class="empty__mark" aria-hidden="true">∞</div>
+        <h2>The grid is empty</h2>
+        <p>Drop an <code>.html</code> game into the <strong>games</strong> folder on this drive, then press <kbd>R</kbd> to refresh. It shows up immediately — no setup needed.</p>
+        <button class="btn btn--primary" id="emptyAdd" type="button">Add a game</button>
+      </div>
+    </div>
+
+    <aside class="detail" id="detail" aria-live="polite">
+      <div class="detail__art" id="detailArt">
+        <div class="detail__art-fallback" aria-hidden="true"><span id="detailInitial">∞</span></div>
+        <img id="detailImg" alt="" hidden>
+        <div class="detail__art-grain" aria-hidden="true"></div>
+      </div>
+
+      <div class="detail__body">
+        <p class="detail__tags" id="detailTags"></p>
+        <h2 class="detail__title" id="detailTitle">—</h2>
+        <p class="detail__author" id="detailAuthor" hidden></p>
+        <p class="detail__desc" id="detailDesc"></p>
+
+        <dl class="spec" id="detailSpec">
+          <div><dt>Controls</dt><dd id="specControls">—</dd></div>
+          <div><dt>File</dt><dd class="mono" id="specFile">—</dd></div>
+        </dl>
+
+        <button class="btn btn--primary btn--play" id="btnPlay" type="button">
+          <span>Launch</span><kbd>Enter</kbd>
+        </button>
+      </div>
+    </aside>
+  </section>
+
+  <!-- ==================================================================== -->
+  <!-- PLAY                                                                  -->
+  <!-- ==================================================================== -->
+  <section class="play" id="play" hidden>
+    <div class="play__loading" id="playLoading"><i></i><i></i><i></i></div>
+    <iframe id="frame" title="Game" allow="autoplay; gamepad; fullscreen"></iframe>
+  </section>
+
+  <!-- ==================================================================== -->
+  <!-- ADD A GAME                                                            -->
+  <!-- ==================================================================== -->
+  <section class="add" id="add" hidden>
+    <form class="add__form" id="addForm" autocomplete="off">
+      <h1 class="add__title">Add a game to the grid</h1>
+      <p class="add__lede">This writes your entry into <code class="mono">games/games.json</code> for you, so a stray comma can't take the whole menu down.</p>
+
+      <div class="field">
+        <label for="fPath">Which file starts your game?</label>
+        <select id="fPath" required></select>
+        <p class="field__help">Every HTML file in the games folder. Not seeing yours? Copy it in, then reopen this form.</p>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="fTitle">Title</label>
+          <input id="fTitle" type="text" maxlength="80" placeholder="Grid Runner" required>
+        </div>
+        <div class="field">
+          <label for="fAuthor">Your name</label>
+          <input id="fAuthor" type="text" maxlength="60" placeholder="Alex R.">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="fDesc">What is it? <span class="field__opt">One or two sentences</span></label>
+        <textarea id="fDesc" rows="3" maxlength="400" placeholder="Outrun your own light trail. The wall you die on is the one you drew."></textarea>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="fControls">Controls <span class="field__opt">Optional</span></label>
+          <input id="fControls" type="text" maxlength="80" placeholder="Arrow keys, Space to boost">
+        </div>
+        <div class="field">
+          <label for="fTags">Tags <span class="field__opt">Comma separated</span></label>
+          <input id="fTags" type="text" maxlength="60" placeholder="arcade, 2-player">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="fPreview">Cover image <span class="field__opt">Optional — a screenshot works great</span></label>
+        <div class="drop" id="drop">
+          <input id="fPreview" type="file" accept="image/*">
+          <img id="dropPreview" alt="" hidden>
+          <p id="dropLabel">Drop an image here, or click to choose one</p>
+        </div>
+      </div>
+
+      <p class="add__error" id="addError" hidden></p>
+
+      <div class="add__actions">
+        <button class="btn btn--primary" type="submit" id="addSubmit">Add to the grid</button>
+        <button class="btn btn--ghost" type="button" id="addCancel">Cancel</button>
+      </div>
+    </form>
+  </section>
+
+</main>
+
+<footer class="footbar" id="footbar">
+  <span class="footbar__keys">
+    <kbd>↑</kbd><kbd>↓</kbd><kbd>W</kbd><kbd>S</kbd> move
+    <em>·</em> <kbd>Enter</kbd> launch
+    <em>·</em> <kbd>Esc</kbd> back
+    <em>·</em> <kbd>R</kbd> refresh
+  </span>
+  <span class="footbar__org">SUN Area Technical Institute · New Berlin, PA</span>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

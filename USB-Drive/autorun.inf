@@ -1,0 +1,19 @@
+; SUN Tech Unlimited - Game Grid
+;
+; Windows disabled AutoRun for USB drives back in 2011, so this file will do
+; nothing on almost every modern machine. It is here as a best effort for the
+; rare setup that still honours it, and so the drive shows a proper name and
+; icon in File Explorer - which it does do, reliably.
+;
+; On any normal computer: double-click START.bat.
+
+[autorun]
+open=START.bat
+icon=system\ui\img\favicon.ico
+label=SUN Tech Unlimited
+action=Open the SUN Tech Unlimited Game Grid
+
+[Content]
+MusicFiles=false
+PictureFiles=false
+VideoFiles=false

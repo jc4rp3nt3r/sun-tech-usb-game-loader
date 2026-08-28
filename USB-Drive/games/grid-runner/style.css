@@ -1,0 +1,25 @@
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#04060D;overflow:hidden;
+  font-family:'Chakra Petch','Bahnschrift',system-ui,sans-serif;color:#E9EEFA}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block;
+  image-rendering:pixelated;background:#04060D}
+#hud{position:absolute;top:14px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:10px;padding:7px 16px;
+  background:rgba(8,13,24,.8);border:1px solid #17203A;
+  clip-path:polygon(9px 0,100% 0,calc(100% - 9px) 100%,0 100%);
+  font-size:13px;letter-spacing:.12em;text-transform:uppercase;z-index:2}
+#hud b{font-variant-numeric:tabular-nums;color:#fff;font-size:15px}
+#hud .lbl{color:#5C6B8C;font-size:11px}
+#hud .sep{width:1px;height:14px;background:#22304F}
+.tag{font-size:10px;letter-spacing:.16em;padding:2px 7px;color:var(--c);
+  border:1px solid color-mix(in srgb,var(--c) 40%,transparent)}
+#msg{position:absolute;inset:0;display:grid;place-content:center;text-align:center;
+  gap:6px;background:rgba(4,6,13,.9);z-index:3;transition:opacity .3s,visibility .3s}
+#msg.hide{opacity:0;visibility:hidden}
+#msg h1{margin:0;font-size:clamp(2rem,7vw,4.2rem);font-weight:700;letter-spacing:.06em;
+  background:linear-gradient(90deg,#F03000,#FF6A00 45%,#FFE94A);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 34px rgba(255,106,0,.5))}
+#msg p{margin:0;color:#93A3C2;font-size:.95rem;max-width:40ch}
+#msg .keys{margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:.75rem;
+  letter-spacing:.1em;color:#5C6B8C;text-transform:uppercase}

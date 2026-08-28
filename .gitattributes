@@ -1,0 +1,19 @@
+# Line endings matter here in both directions, so nothing is left to chance.
+#
+#   .bat / .cmd / .inf  MUST be CRLF - cmd.exe mis-parses LF batch files,
+#                       often in ways that look like logic bugs.
+#   .command / .sh      MUST be LF   - a CRLF shebang makes macOS report
+#                       "bad interpreter", which is a miserable thing to debug.
+
+* text=auto eol=lf
+
+*.bat       text eol=crlf
+*.cmd       text eol=crlf
+*.inf       text eol=crlf
+*.command   text eol=lf
+*.sh        text eol=lf
+
+*.png       binary
+*.ico       binary
+*.woff2     binary
+*.woff      binary
